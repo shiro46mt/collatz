@@ -2,26 +2,46 @@
 <html>
 <head>
     <title>Collatz Conjecture</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
             font-family: Arial, sans-serif;
         }
+        .chartWrapper{
+            position: relative;
+            overflow-x: auto;
+        }
+        .chartContainer{
+            height: 250px;
+        }
+        .graph_canvas{
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript">
+        var nend_params = {"media":72005,"site":407135,"spot":1155423,"type":2,"oriented":1};
+    </script>
+    <script type="text/javascript" src="https://js1.nend.net/js/nendAdLoader.js"></script>
 </head>
 <body>
     <h1>Collatz Conjecture</h1>
     <label for="inputNumber">Enter a number:</label>
     <input type="number" id="inputNumber" value="27">
     <button onclick="startCollatz()">Start</button>
-    <div>
-        <canvas id="collatzChart" width="400" height="200"></canvas>
+    <div class="chartWrapper">
+        <div class="chartContainer">
+            <canvas id="graph" class="graph_canvas"></canvas>
+        </div>
     </div>
     <p id="summary"></p>
     <div id="output"></div>
 
     <script>
-        const ctx = document.getElementById('collatzChart').getContext('2d');
+        const ctx = document.getElementById('graph').getContext('2d');
+        ctx.canvas.height = 250;
         let data = [];
         const labels = [];
         let myChart;
@@ -46,10 +66,10 @@
                 data.push(x);
 
                 if (x % 2 === 0) {
-                    outputDiv.innerHTML += x + '<br>&darr;<br>';
+                    outputDiv.innerHTML += x + ' &rarr; ';
                     x /= 2;
                 } else {
-                    outputDiv.innerHTML += '<span style="color: red">' + x + '</span><br>&darr;<br>';
+                    outputDiv.innerHTML += '<span style="color: red">' + x + '</span> &rarr; <br> <br>';
                     x = 3 * x + 1;
                 }
             }
@@ -57,7 +77,13 @@
             data.push(1);
 
             outputDiv.innerHTML += '<span style="color: red">1</span>'; // Add the final 1
-            document.getElementById('summary').innerHTML = data.length + ' steps. Max: ' + data.reduce((a,b)=>Math.max(a,b));
+            document.getElementById('summary').innerHTML = data.length + ' steps. Max: ' + data.reduce((a, b) => Math.max(a, b));
+
+            // Calculate the new width based on data length
+            let width = data.length * 15;
+            // Set the width of the graph and the canvas
+            document.getElementById('graph').style.width = width + "px";
+            ctx.canvas.width = width;
 
             createChart();
         }
@@ -80,8 +106,11 @@
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: false,
+                    }
                 }
             });
         }
