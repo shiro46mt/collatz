@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Collatz Conjecture</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Collatz Conjecture</h1>
+    <label for="inputNumber">Enter a number:</label>
+    <input type="number" id="inputNumber">
+    <button onclick="startCollatz()">Start</button>
+    <div>
+        <canvas id="collatzChart" width="400" height="200"></canvas>
+    </div>
+    <p id="summary"></p>
+    <div id="output"></div>
+
+    <script>
+        const ctx = document.getElementById('collatzChart').getContext('2d');
+        let data = [];
+        const labels = [];
+        let myChart;
+
+        function startCollatz() {
+            const inputNumber = document.getElementById('inputNumber').value;
+
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = ''; // Clear previous results
+
+            if (inputNumber <= 0) {
+                outputDiv.innerHTML = 'Please enter a positive integer.';
+                return;
+            }
+
+            let x = inputNumber;
+            data = [];
+            labels.length = 0;
+
+            while (x !== 1) {
+                labels.push(x);
+                data.push(x);
+
+                if (x % 2 === 0) {
+                    outputDiv.innerHTML += x + '<br>&darr;<br>';
+                    x /= 2;
+                } else {
+                    outputDiv.innerHTML += '<span style="color: red">' + x + '</span><br>&darr;<br>';
+                    x = 3 * x + 1;
+                }
+            }
+            labels.push(1);
+            data.push(1);
+
+            outputDiv.innerHTML += '<span style="color: red">1</span>'; // Add the final 1
+            document.getElementById('summary').innerHTML = data.length + ' steps. Max: ' + data.reduce((a,b)=>Math.max(a,b));
+
+            createChart();
+        }
+
+        function createChart() {
+            if (myChart) {
+                myChart.destroy(); // Destroy the existing chart if it exists
+            }
+
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Collatz Conjecture',
+                        data: data,
+                        borderWidth: 2,
+                        borderColor: 'blue',
+                        backgroundColor: 'transparent'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
